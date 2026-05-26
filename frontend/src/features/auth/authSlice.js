@@ -40,7 +40,7 @@ export const fetchProfile = createAsyncThunk('auth/profile', async (_, { rejectW
     return rejectWithValue(err.response?.data)
   }
 })
-export const logoutUser = createAsyncThunk('auth/logout', async (_, { getState }) => {
+export const logoutUser = createAsyncThunk('auth/logout', async () => {
   const refresh = localStorage.getItem('refresh')
   try { 
     if (refresh) {

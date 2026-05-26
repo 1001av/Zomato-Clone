@@ -11,7 +11,7 @@ import { clearCart } from '../features/cart/cartSlice'
 // Load Stripe outside render to avoid recreating
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
 
-function CheckoutForm({ orderId, orderNumber, amount }) {
+function CheckoutForm({ orderId, amount }) {  // removed orderNumber since it's not used in this component
   const stripe = useStripe()
   const elements = useElements()
   const navigate = useNavigate()

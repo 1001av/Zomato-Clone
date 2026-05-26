@@ -1,6 +1,6 @@
 // src/pages/CheckoutPage.jsx
 import { useState, useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector} from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { selectCartItems, selectCartTotal } from '../features/cart/cartSlice'
 import api from '../api/axios'
@@ -9,7 +9,7 @@ import { MapPin, Tag, Clock } from 'lucide-react'
 
 export default function CheckoutPage() {
   const navigate = useNavigate()
-  const dispatch = useDispatch()
+//   const dispatch = useDispatch()
   const items = useSelector(selectCartItems)
   const subtotal = useSelector(selectCartTotal)
   const { restaurantId } = useSelector((s) => s.cart)
@@ -30,7 +30,7 @@ export default function CheckoutPage() {
     if (restaurantId) {
       api.get(`/restaurants/${restaurantId}/`).then(r => setRestaurant(r.data))
     }
-  }, [])
+  }, [items.length, navigate, restaurantId])  // fixed here to include restaurantId
 
   const tax = subtotal * 0.05
   const deliveryFee = restaurant ? Number(restaurant.delivery_fee) : 0

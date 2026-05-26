@@ -37,7 +37,7 @@ export default function App() {
 
   useEffect(() => {
     if (isAuthenticated) dispatch(fetchProfile())
-  }, [isAuthenticated])
+  }, [isAuthenticated, dispatch])
 
   return (
     <div className="min-h-screen bg-gray-50">

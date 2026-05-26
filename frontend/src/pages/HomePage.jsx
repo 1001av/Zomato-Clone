@@ -1,7 +1,7 @@
 // src/pages/HomePage.jsx
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Search, MapPin } from 'lucide-react'
+import { Search} from 'lucide-react'  // removed MapPin since they are not used in this file
 import api from '../api/axios'
 import RestaurantCard from '../components/restaurant/RestaurantCard'
 import SkeletonCard from '../components/common/SkeletonCard'
