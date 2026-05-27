@@ -5,9 +5,90 @@ import {
   ShoppingCart, MapPin, Search, Moon, Sun,
   ChevronDown, Menu, X, UtensilsCrossed,
 } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { logoutUser } from '../../features/auth/authSlice'
 import { toggleCart, selectCartCount } from '../../features/cart/cartSlice'
+
+const CITIES = [
+  'Bangalore', 'Mumbai', 'Delhi', 'Chennai',
+  'Hyderabad', 'Pune', 'Kolkata', 'Ahmedabad',
+  'Jaipur', 'Raipur',
+]
+
+function CityPicker() {
+  const [open, setOpen]       = useState(false)
+  const [city, setCity]       = useState('Bangalore')
+  const [query, setQuery]     = useState('')
+  const ref                   = useRef(null)
+
+  // Close on outside click
+  useEffect(() => {
+    const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false) }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
+
+  const filtered = CITIES.filter(c => c.toLowerCase().includes(query.toLowerCase()))
+
+  const select = (c) => {
+    setCity(c)
+    setOpen(false)
+    setQuery('')
+  }
+
+  return (
+    <div ref={ref} className="relative hidden sm:block shrink-0">
+      {/* Trigger button */}
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="flex items-center gap-1.5 text-sm font-semibold text-gray-800 dark:text-gray-200 hover:text-brand-500 dark:hover:text-brand-400 transition-colors"
+      >
+        <MapPin className="w-4 h-4 text-brand-500" />
+        {city}
+        <ChevronDown className={`w-3.5 h-3.5 text-gray-400 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
+      </button>
+
+      {/* Dropdown */}
+      {open && (
+        <div className="absolute left-0 top-full mt-2 w-52 bg-white dark:bg-zinc-800 rounded-2xl shadow-xl border border-gray-100 dark:border-zinc-700 overflow-hidden z-50">
+          {/* Search within cities */}
+          <div className="p-2 border-b border-gray-100 dark:border-zinc-700">
+            <input
+              autoFocus
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+              placeholder="Search city..."
+              className="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-zinc-700 rounded-xl outline-none placeholder:text-gray-400 dark:text-gray-200"
+            />
+          </div>
+
+          {/* City list */}
+          <ul className="py-1 max-h-56 overflow-y-auto">
+            {filtered.length === 0 ? (
+              <li className="px-4 py-3 text-sm text-gray-400 text-center">No cities found</li>
+            ) : (
+              filtered.map(c => (
+                <li key={c}>
+                  <button
+                    onClick={() => select(c)}
+                    className={`w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-left transition-colors
+                      ${c === city
+                        ? 'bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 font-semibold'
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-700'}`}
+                  >
+                    <MapPin className={`w-3.5 h-3.5 shrink-0 ${c === city ? 'text-brand-500' : 'text-gray-300'}`} />
+                    {c}
+                    {c === city && <span className="ml-auto text-brand-500 text-xs">✓</span>}
+                  </button>
+                </li>
+              ))
+            )}
+          </ul>
+        </div>
+      )}
+    </div>
+  )
+}
 
 export default function Navbar() {
   const dispatch   = useDispatch()
@@ -56,12 +137,8 @@ export default function Navbar() {
             </span>
           </Link>
 
-          {/* ── Location pill ── */}
-          <button className="hidden sm:flex items-center gap-1.5 text-sm font-semibold text-gray-800 dark:text-gray-200 hover:text-brand-500 transition-colors shrink-0">
-            <MapPin className="w-4 h-4 text-brand-500" />
-            Bangalore
-            <ChevronDown className="w-3.5 h-3.5 text-gray-400" />
-          </button>
+          {/* ── Location picker ── */}
+          <CityPicker />
 
           {/* ── Search bar ── */}
           <div className="flex-1 relative hidden md:block">
@@ -129,14 +206,21 @@ export default function Navbar() {
                 </div>
               </div>
             ) : (
-              <Link
-                to="/login"
-                className="hidden md:block bg-brand-500 hover:bg-brand-600 text-white text-sm font-bold px-5 py-2.5 rounded-full transition-colors"
-              >
-                Sign in
-              </Link>
+              <div className="hidden md:flex items-center gap-2">
+                <Link
+                  to="/login"
+                  className="text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-brand-500 transition-colors px-3 py-2"
+                >
+                  Sign in
+                </Link>
+                <Link
+                  to="/login?tab=register"
+                  className="bg-brand-500 hover:bg-brand-600 text-white text-sm font-bold px-5 py-2.5 rounded-full transition-colors"
+                >
+                  Register
+                </Link>
+              </div>
             )}
-
             {/* Mobile hamburger */}
             <button
               onClick={() => setMobile(!mobileOpen)}

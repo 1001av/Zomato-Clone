@@ -24,6 +24,7 @@ import OrderHistoryPage from './pages/OrderHistoryPage'
 import OwnerDashboard from './pages/owner/OwnerDashboard'
 import ManageMenuPage from './pages/owner/ManageMenuPage'
 import ManageOrdersPage from './pages/owner/ManageOrdersPage'
+import RestaurantSettingsPage from './pages/owner/RestaurantSettingsPage'
 
 // Admin pages
 import AdminDashboard from './pages/admin/AdminDashboard'
@@ -65,6 +66,7 @@ export default function App() {
           <Route path="/owner"                element={<OwnerDashboard />} />
           <Route path="/owner/menu"           element={<ManageMenuPage />} />
           <Route path="/owner/orders"         element={<ManageOrdersPage />} />
+          <Route path="/owner/settings"       element={<RestaurantSettingsPage />} />
         </Route>
 
         {/* Admin */}

@@ -49,7 +49,7 @@ export default function LoginPage() {
   const dispatch  = useDispatch()
   const navigate  = useNavigate()
   const { loading } = useSelector(s => s.auth)
-  const [tab, setTab]         = useState('login')   // 'login' | 'register'
+  const [tab, setTab] = useState(() => new URLSearchParams(window.location.search).get('tab') === 'register' ? 'register' : 'login')   // 'login' | 'register'
   const [showPw, setShowPw]   = useState(false)
   const [showPw2, setShowPw2] = useState(false)
 
