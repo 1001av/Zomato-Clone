@@ -1,120 +1,182 @@
 // src/components/layout/Navbar.jsx
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { ShoppingCart, User, LogOut, ChevronDown, UtensilsCrossed } from 'lucide-react'
-import { logoutUser } from '../../features/auth/authSlice'
-import { toggleCart } from '../../features/cart/cartSlice'
-import { selectCartCount } from '../../features/cart/cartSlice'
+import {
+  ShoppingCart, MapPin, Search, Moon, Sun,
+  ChevronDown, Menu, X, UtensilsCrossed,
+} from 'lucide-react'
 import { useState } from 'react'
+import { logoutUser } from '../../features/auth/authSlice'
+import { toggleCart, selectCartCount } from '../../features/cart/cartSlice'
 
 export default function Navbar() {
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
-  const { isAuthenticated, user } = useSelector((state) => state.auth)
-  const cartCount = useSelector(selectCartCount)
-  const [dropdownOpen, setDropdownOpen] = useState(false)
+  const dispatch   = useDispatch()
+  const navigate   = useNavigate()
+  const cartCount  = useSelector(selectCartCount)
+  const { isAuthenticated, user } = useSelector((s) => s.auth)
+
+  const [dark, setDark] = useState(false)
+  const [mobileOpen, setMobile] = useState(false)
+  const [search, setSearch]     = useState('')
+
+  const toggleDark = () => {
+     if (dark) {
+    document.documentElement.classList.remove('dark')
+    setDark(false)
+  } else {
+    document.documentElement.classList.add('dark')
+    setDark(true)
+  }
+  }
 
   const handleLogout = () => {
     dispatch(logoutUser())
     navigate('/')
   }
 
-  return (
-    <nav className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+  const handleSearch = (e) => {
+    if (e.key === 'Enter' && search.trim()) {
+      navigate(`/restaurants?search=${search}`)
+      setSearch('')
+    }
+  }
 
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 font-bold text-xl text-brand">
-            <UtensilsCrossed className="w-6 h-6" />
-            <span>FoodRush</span>
+  return (
+    <nav className="sticky top-0 z-50 bg-white dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-800 shadow-sm">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center gap-4 h-16">
+
+          {/* ── Logo ── */}
+          <Link to="/" className="flex items-center gap-2 shrink-0">
+            <div className="w-9 h-9 bg-brand-500 rounded-xl flex items-center justify-center">
+              <UtensilsCrossed className="w-5 h-5 text-white" />
+            </div>
+            <span className="text-xl font-extrabold tracking-tight dark:text-white">
+              <span className="text-brand-500">food</span>rush
+            </span>
           </Link>
 
-          {/* Search */}
-          <div className="hidden md:flex flex-1 max-w-md mx-8">
+          {/* ── Location pill ── */}
+          <button className="hidden sm:flex items-center gap-1.5 text-sm font-semibold text-gray-800 dark:text-gray-200 hover:text-brand-500 transition-colors shrink-0">
+            <MapPin className="w-4 h-4 text-brand-500" />
+            Bangalore
+            <ChevronDown className="w-3.5 h-3.5 text-gray-400" />
+          </button>
+
+          {/* ── Search bar ── */}
+          <div className="flex-1 relative hidden md:block">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
-              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={handleSearch}
               placeholder="Search restaurants or dishes..."
-              className="w-full px-4 py-2 rounded-full border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand"
-              onFocus={() => navigate('/restaurants')}
-              readOnly
+              className="w-full pl-10 pr-4 py-2.5 bg-gray-100 dark:bg-zinc-800 text-sm text-gray-800 dark:text-gray-200 rounded-full border-none outline-none focus:ring-2 focus:ring-brand-500/30 placeholder:text-gray-400"
             />
           </div>
 
-          {/* Actions */}
-          <div className="flex items-center gap-3">
+          {/* ── Right actions ── */}
+          <div className="flex items-center gap-2 ml-auto">
+            {/* Dark mode toggle */}
+            <button
+              onClick={toggleDark}
+              className="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors"
+            >
+              {dark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button>
+
             {/* Cart */}
             <button
               onClick={() => dispatch(toggleCart())}
-              className="relative p-2 rounded-full hover:bg-gray-100 transition-colors"
-              aria-label="Cart"
+              className="relative p-2 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors"
             >
-              <ShoppingCart className="w-5 h-5 text-gray-700" />
+              <ShoppingCart className="w-5 h-5" />
               {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-brand text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-brand-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
                   {cartCount}
                 </span>
               )}
             </button>
 
+            {/* Auth */}
             {isAuthenticated && user ? (
-              <div className="relative">
-                <button
-                  onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="flex items-center gap-2 px-3 py-2 rounded-full hover:bg-gray-100 transition-colors text-sm font-medium"
-                >
-                  <div className="w-7 h-7 bg-brand rounded-full flex items-center justify-center text-white text-xs font-bold">
+              <div className="relative group hidden md:block">
+                <button className="flex items-center gap-2 px-4 py-2 rounded-full bg-brand-500 text-white text-sm font-semibold hover:bg-brand-600 transition-colors">
+                  <div className="w-5 h-5 rounded-full bg-white/30 flex items-center justify-center text-xs font-bold">
                     {user.first_name?.[0]?.toUpperCase()}
                   </div>
-                  <span className="hidden sm:block">{user.first_name}</span>
-                  <ChevronDown className="w-4 h-4 text-gray-500" />
+                  {user.first_name}
+                  <ChevronDown className="w-3.5 h-3.5" />
                 </button>
-
-                {dropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-50">
-                    {user.role === 'customer' && (
-                      <>
-                        <Link to="/profile" className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50" onClick={() => setDropdownOpen(false)}>
-                          <User className="w-4 h-4" /> Profile
-                        </Link>
-                        <Link to="/orders" className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50" onClick={() => setDropdownOpen(false)}>
-                          Orders
-                        </Link>
-                      </>
-                    )}
-                    {user.role === 'owner' && (
-                      <Link to="/owner" className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50" onClick={() => setDropdownOpen(false)}>
-                        Dashboard
-                      </Link>
-                    )}
-                    {user.role === 'admin' && (
-                      <Link to="/admin-panel" className="flex items-center gap-2 px-4 py-2 text-sm hover:bg-gray-50" onClick={() => setDropdownOpen(false)}>
-                        Admin Panel
-                      </Link>
-                    )}
-                    <hr className="my-1 border-gray-100" />
-                    <button
-                      onClick={handleLogout}
-                      className="flex items-center gap-2 w-full px-4 py-2 text-sm text-red-500 hover:bg-red-50"
-                    >
-                      <LogOut className="w-4 h-4" /> Sign out
-                    </button>
-                  </div>
-                )}
+                {/* Dropdown */}
+                <div className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-zinc-800 rounded-2xl shadow-xl border border-gray-100 dark:border-zinc-700 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+                  {user.role === 'customer' && (
+                    <>
+                      <Link to="/profile" className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-700">Profile</Link>
+                      <Link to="/orders" className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-700">My Orders</Link>
+                    </>
+                  )}
+                  {user.role === 'owner' && (
+                    <Link to="/owner" className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-700">Dashboard</Link>
+                  )}
+                  {user.role === 'admin' && (
+                    <Link to="/admin-panel" className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-700">Admin Panel</Link>
+                  )}
+                  <hr className="my-1 border-gray-100 dark:border-zinc-700" />
+                  <button onClick={handleLogout} className="block w-full text-left px-4 py-2.5 text-sm text-brand-500 hover:bg-red-50 dark:hover:bg-zinc-700">
+                    Sign out
+                  </button>
+                </div>
               </div>
             ) : (
-              <div className="flex items-center gap-2">
-                <Link to="/login" className="text-sm font-medium text-gray-700 hover:text-brand px-3 py-2">
-                  Log in
-                </Link>
-                <Link to="/register" className="bg-brand text-white text-sm font-medium px-4 py-2 rounded-full hover:bg-brand-600 transition-colors">
-                  Sign up
-                </Link>
-              </div>
+              <Link
+                to="/login"
+                className="hidden md:block bg-brand-500 hover:bg-brand-600 text-white text-sm font-bold px-5 py-2.5 rounded-full transition-colors"
+              >
+                Sign in
+              </Link>
             )}
+
+            {/* Mobile hamburger */}
+            <button
+              onClick={() => setMobile(!mobileOpen)}
+              className="md:hidden p-2 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-800"
+            >
+              {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile search */}
+        <div className="md:hidden pb-3">
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onKeyDown={handleSearch}
+              placeholder="Search restaurants or dishes..."
+              className="w-full pl-10 pr-4 py-2.5 bg-gray-100 dark:bg-zinc-800 text-sm rounded-full outline-none"
+            />
           </div>
         </div>
       </div>
+
+      {/* Mobile menu */}
+      {mobileOpen && (
+        <div className="md:hidden border-t border-gray-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-4 space-y-2">
+          <Link to="/restaurants" onClick={() => setMobile(false)} className="block py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300">Browse Restaurants</Link>
+          {isAuthenticated ? (
+            <>
+              {user?.role === 'customer' && <Link to="/orders" onClick={() => setMobile(false)} className="block py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300">My Orders</Link>}
+              {user?.role === 'owner' && <Link to="/owner" onClick={() => setMobile(false)} className="block py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300">Dashboard</Link>}
+              <button onClick={handleLogout} className="block py-2.5 text-sm font-medium text-brand-500">Sign out</button>
+            </>
+          ) : (
+            <Link to="/login" onClick={() => setMobile(false)} className="block py-2.5 text-sm font-bold text-brand-500">Sign in</Link>
+          )}
+        </div>
+      )}
     </nav>
   )
 }
