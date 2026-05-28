@@ -1,13 +1,31 @@
 # restaurants/serializers.py
+# backend/restaurants/serializers.py
 from rest_framework import serializers
 from .models import Restaurant, Category, MenuItem, Cuisine, Favourite
 from users.serializers import UserDetailSerializer
+
+
+def get_absolute_image_url(request, image_field):
+    """Return full URL for an ImageField, or None if empty."""
+    if not image_field:
+        return None
+    if request is not None:
+        return request.build_absolute_uri(image_field.url)
+    # Fallback (no request context) — prepend backend origin
+    return f"http://localhost:8000{image_field.url}"
 
 
 class CuisineSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cuisine
         fields = ['id', 'name', 'image']
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        request = self.context.get('request')
+        if instance.image:
+            rep['image'] = get_absolute_image_url(request, instance.image)
+        return rep
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -27,9 +45,15 @@ class MenuItemSerializer(serializers.ModelSerializer):
             'calories', 'category', 'category_name'
         ]
 
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        request = self.context.get('request')
+        if instance.image:
+            rep['image'] = get_absolute_image_url(request, instance.image)
+        return rep
+
 
 class RestaurantListSerializer(serializers.ModelSerializer):
-    """Lightweight serializer for listing (cards)"""
     cuisines = CuisineSerializer(many=True, read_only=True)
     is_favourite = serializers.SerializerMethodField()
 
@@ -41,6 +65,15 @@ class RestaurantListSerializer(serializers.ModelSerializer):
             'delivery_fee', 'min_order', 'is_open', 'is_favourite'
         ]
 
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        request = self.context.get('request')
+        if instance.logo:
+            rep['logo'] = get_absolute_image_url(request, instance.logo)
+        if instance.banner:
+            rep['banner'] = get_absolute_image_url(request, instance.banner)
+        return rep
+
     def get_is_favourite(self, obj):
         request = self.context.get('request')
         if request and request.user.is_authenticated:
@@ -49,7 +82,6 @@ class RestaurantListSerializer(serializers.ModelSerializer):
 
 
 class RestaurantDetailSerializer(serializers.ModelSerializer):
-    """Full serializer for restaurant detail page"""
     cuisines = CuisineSerializer(many=True, read_only=True)
     categories = CategorySerializer(many=True, read_only=True)
     menu_items = MenuItemSerializer(many=True, read_only=True)
@@ -60,12 +92,20 @@ class RestaurantDetailSerializer(serializers.ModelSerializer):
         model = Restaurant
         fields = '__all__'
 
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        request = self.context.get('request')
+        if instance.logo:
+            rep['logo'] = get_absolute_image_url(request, instance.logo)
+        if instance.banner:
+            rep['banner'] = get_absolute_image_url(request, instance.banner)
+        return rep
+
     def get_is_favourite(self, obj):
         request = self.context.get('request')
         if request and request.user.is_authenticated:
             return obj.favourited_by.filter(user=request.user).exists()
         return False
-
 
 class RestaurantCreateUpdateSerializer(serializers.ModelSerializer):
     cuisine_ids = serializers.PrimaryKeyRelatedField(

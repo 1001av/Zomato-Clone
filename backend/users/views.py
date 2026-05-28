@@ -89,3 +89,13 @@ class AddressDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         return Address.objects.filter(user=self.request.user)
+    
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def admin_user_list(request):
+    if request.user.role != 'admin':
+        return Response({'detail': 'Forbidden.'}, status=403)
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
+    users = User.objects.all().values('id', 'first_name', 'last_name', 'email', 'role', 'date_joined')
+    return Response(list(users))
