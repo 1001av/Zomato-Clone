@@ -143,8 +143,10 @@ SIMPLE_JWT = {
 # ── CORS ─────────────────────────────────────────────────────────
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
-    "https://zomato-clone.vercel.app",  # update after Vercel gives you URL
+    "https://zomato-clone-3zyepjt5t-akhil-s-projects18.vercel.app",
+    "https://zomato-clone.vercel.app",
 ]
+CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOW_CREDENTIALS = True
 
 # ── Cloudinary (image uploads) ───────────────────────────────────
