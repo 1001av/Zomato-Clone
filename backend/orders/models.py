@@ -70,10 +70,9 @@ class Order(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.order_number:
-            # Generate short order number e.g. ORD-0001
-            last = Order.objects.order_by('-created_at').first()
-            num = (int(last.order_number.split('-')[1]) + 1) if last and last.order_number else 1
-            self.order_number = f'ORD-{num:04d}'
+        # Count existing orders and increment safely
+            count = Order.objects.count()
+            self.order_number = f'ORD-{count + 1:04d}'
         super().save(*args, **kwargs)
 
     def __str__(self):

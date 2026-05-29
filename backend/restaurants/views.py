@@ -1,5 +1,5 @@
 # restaurants/views.py
-from rest_framework import generics, permissions, status, filters
+from rest_framework import generics, permissions, status, filters, parsers
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
@@ -48,14 +48,15 @@ class RestaurantDetailView(generics.RetrieveAPIView):
 class RestaurantCreateView(generics.CreateAPIView):
     serializer_class = RestaurantCreateUpdateSerializer
     permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [parsers.MultiPartParser, parsers.FormParser, parsers.JSONParser]
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
-
-
+        serializer.save(owner=self.request.user, status='pending')
+        
 class RestaurantManageView(generics.RetrieveUpdateAPIView):
     serializer_class = RestaurantCreateUpdateSerializer
     permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [parsers.MultiPartParser, parsers.FormParser, parsers.JSONParser]
 
     def get_object(self):
         try:

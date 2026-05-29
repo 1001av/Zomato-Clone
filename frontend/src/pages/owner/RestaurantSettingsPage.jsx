@@ -92,50 +92,44 @@ export default function RestaurantSettingsPage() {
   }, [])
 
   const onSubmit = async (formData) => {
-  setSaving(true)
-  try {
-    const payload = {
-      name:          formData.name,
-      description:   formData.description,
-      phone:         formData.phone,
-      email:         formData.email,
-      address:       formData.address,
-      city:          formData.city,
-      state:         formData.state,
-      pincode:       formData.pincode,
-      opening_time:  formData.opening_time,
-      closing_time:  formData.closing_time,
-      delivery_fee:  Number(formData.delivery_fee),
-      delivery_time: Number(formData.delivery_time),
-      min_order:     Number(formData.min_order),
-    }
-
-    // POST if no restaurant yet, PATCH if updating existing
-    const { data } = restaurant
-      ? await api.patch('/restaurants/manage/', payload)
-      : await api.post('/restaurants/create/', payload)
-
-    setRestaurant(data)
-
-    if (logoFile) {
+    setSaving(true)
+    try {
+      // Always use FormData so images work on both create and update
       const fd = new FormData()
-      fd.append('logo', logoFile)
-      await api.patch('/restaurants/manage/', fd, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      })
-    }
-    if (bannerFile) {
-      const fd = new FormData()
-      fd.append('banner', bannerFile)
-      await api.patch('/restaurants/manage/', fd, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      })
-    }
+      fd.append('name',          formData.name)
+      fd.append('description',   formData.description || '')
+      fd.append('phone',         formData.phone || '')
+      fd.append('email',         formData.email || '')
+      fd.append('address',       formData.address || '')
+      fd.append('city',          formData.city || '')
+      fd.append('state',         formData.state || '')
+      fd.append('pincode',       formData.pincode || '')
+      fd.append('opening_time',  formData.opening_time || '09:00')
+      fd.append('closing_time',  formData.closing_time || '23:00')
+      fd.append('delivery_fee',  Number(formData.delivery_fee) || 0)
+      fd.append('delivery_time', Number(formData.delivery_time) || 30)
+      fd.append('min_order',     Number(formData.min_order) || 100)
 
-    toast.success(restaurant ? '✅ Settings saved!' : '🎉 Restaurant created! It will be visible after admin approval.')
-  } catch (err) {
+      // Attach images if selected
+      if (logoFile)   fd.append('logo',   logoFile)
+      if (bannerFile) fd.append('banner', bannerFile)
+
+      const config = { headers: { 'Content-Type': 'multipart/form-data' } }
+
+      // POST if new restaurant, PATCH if updating existing
+      const { data } = restaurant
+        ? await api.patch('/restaurants/manage/', fd, config)
+        : await api.post('/restaurants/create/', fd, config)
+
+      setRestaurant(data)
+      setLogoFile(null)
+      setBannerFile(null)
+      toast.success(restaurant
+        ? '✅ Settings saved!'
+        : '🎉 Restaurant created! It will be visible after admin approval.'
+      )
+    } catch (err) {
       console.error('Save error:', err.response?.data || err)
-      // Show the specific field errors from Django if any
       const errData = err.response?.data
       if (errData && typeof errData === 'object') {
         const firstError = Object.entries(errData)[0]
@@ -143,11 +137,10 @@ export default function RestaurantSettingsPage() {
       } else {
         toast.error(errData?.detail || 'Failed to save.')
       }
+    } finally {
+      setSaving(false)
     }
-    finally {
-    setSaving(false)
   }
-}
 
   if (loading) return (
     <div className="max-w-3xl mx-auto px-4 py-8 space-y-4">

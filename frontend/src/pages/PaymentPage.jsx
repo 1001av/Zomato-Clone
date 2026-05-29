@@ -15,7 +15,9 @@ import toast from 'react-hot-toast'
 import { ShieldCheck, ArrowLeft } from 'lucide-react'
 
 // Load Stripe — must be outside component
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
+const STRIPE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY
+if (!STRIPE_KEY) console.error('⚠️ VITE_STRIPE_PUBLISHABLE_KEY is not set in frontend/.env')
+const stripePromise = loadStripe(STRIPE_KEY)
 
 // ── Inner payment form ───────────────────────────────────────────
 function PaymentForm({ orderId, orderNumber, amount }) {

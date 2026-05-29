@@ -169,12 +169,19 @@ CELERY_RESULT_BACKEND = REDIS_URL
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 
+# Use dummy cache locally (no Redis needed)
+# Switch to RedisCache only when Redis is actually running
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-        'LOCATION': REDIS_URL,
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
     }
 }
+
+# Celery — only used if you run a worker, safe to leave here
+CELERY_BROKER_URL = REDIS_URL
+CELERY_RESULT_BACKEND = REDIS_URL
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
 
 # ── Stripe ────────────────────────────────────────────────────────
 STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY', '')
