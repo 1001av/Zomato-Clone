@@ -69,6 +69,7 @@ export default function RestaurantSettingsPage() {
   useEffect(() => {
     api.get('/restaurants/manage/')
       .then(({ data }) => {
+        if (!data) return   // new owner, no restaurant yet
         setRestaurant(data)
         reset({
           name:         data.name || '',
@@ -91,52 +92,62 @@ export default function RestaurantSettingsPage() {
   }, [])
 
   const onSubmit = async (formData) => {
-    setSaving(true)
-    try {
-      // Send text fields as JSON first
-      const { data } = await api.patch('/restaurants/manage/', {
-        name:         formData.name,
-        description:  formData.description,
-        phone:        formData.phone,
-        email:        formData.email,
-        address:      formData.address,
-        city:         formData.city,
-        state:        formData.state,
-        pincode:      formData.pincode,
-        opening_time: formData.opening_time,
-        closing_time: formData.closing_time,
-        delivery_fee:  Number(formData.delivery_fee),
-        delivery_time: Number(formData.delivery_time),
-        min_order:     Number(formData.min_order),
-      })
-
-      // Upload logo separately if changed
-      if (logoFile) {
-        const fd = new FormData()
-        fd.append('logo', logoFile)
-        await api.patch('/restaurants/manage/', fd, {
-          headers: { 'Content-Type': 'multipart/form-data' },
-        })
-      }
-
-      // Upload banner separately if changed
-      if (bannerFile) {
-        const fd = new FormData()
-        fd.append('banner', bannerFile)
-        await api.patch('/restaurants/manage/', fd, {
-          headers: { 'Content-Type': 'multipart/form-data' },
-        })
-      }
-
-      setRestaurant(data)
-      toast.success('✅ Settings saved!')
-    } catch (err) {
-      console.error(err)
-      toast.error(err.response?.data?.detail || 'Failed to save settings.')
-    } finally {
-      setSaving(false)
+  setSaving(true)
+  try {
+    const payload = {
+      name:          formData.name,
+      description:   formData.description,
+      phone:         formData.phone,
+      email:         formData.email,
+      address:       formData.address,
+      city:          formData.city,
+      state:         formData.state,
+      pincode:       formData.pincode,
+      opening_time:  formData.opening_time,
+      closing_time:  formData.closing_time,
+      delivery_fee:  Number(formData.delivery_fee),
+      delivery_time: Number(formData.delivery_time),
+      min_order:     Number(formData.min_order),
     }
+
+    // POST if no restaurant yet, PATCH if updating existing
+    const { data } = restaurant
+      ? await api.patch('/restaurants/manage/', payload)
+      : await api.post('/restaurants/create/', payload)
+
+    setRestaurant(data)
+
+    if (logoFile) {
+      const fd = new FormData()
+      fd.append('logo', logoFile)
+      await api.patch('/restaurants/manage/', fd, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+    }
+    if (bannerFile) {
+      const fd = new FormData()
+      fd.append('banner', bannerFile)
+      await api.patch('/restaurants/manage/', fd, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+    }
+
+    toast.success(restaurant ? '✅ Settings saved!' : '🎉 Restaurant created! It will be visible after admin approval.')
+  } catch (err) {
+      console.error('Save error:', err.response?.data || err)
+      // Show the specific field errors from Django if any
+      const errData = err.response?.data
+      if (errData && typeof errData === 'object') {
+        const firstError = Object.entries(errData)[0]
+        toast.error(`${firstError[0]}: ${firstError[1]}`)
+      } else {
+        toast.error(errData?.detail || 'Failed to save.')
+      }
+    }
+    finally {
+    setSaving(false)
   }
+}
 
   if (loading) return (
     <div className="max-w-3xl mx-auto px-4 py-8 space-y-4">

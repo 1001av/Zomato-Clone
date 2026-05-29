@@ -17,9 +17,121 @@
   font-family: 'Inter', sans-serif;
 }
 
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
+/* ── Global dark mode base ── */
+.dark body {
+  background-color: #111827;
+  color: #f9fafb;
 }
+
+/* Cards */
+.dark .bg-white {
+  background-color: #1f2937;
+}
+
+.dark .bg-gray-50 {
+  background-color: #18212f;
+}
+
+.dark .bg-gray-100 {
+  background-color: #1f2937;
+}
+
+/* Text */
+.dark .text-gray-900 { color: #f9fafb; }
+.dark .text-gray-800 { color: #f3f4f6; }
+.dark .text-gray-700 { color: #e5e7eb; }
+.dark .text-gray-600 { color: #d1d5db; }
+.dark .text-gray-500 { color: #9ca3af; }
+.dark .text-gray-400 { color: #6b7280; }
+
+/* Borders */
+.dark .border-gray-100 { border-color: #374151; }
+.dark .border-gray-200 { border-color: #374151; }
+
+/* Inputs */
+.dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+.dark textarea,
+.dark select {
+  background-color: #374151;
+  border-color: #4b5563;
+  color: #f9fafb;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #6b7280;
+}
+
+/* Dividers */
+.dark .divide-gray-100 > * + *,
+.dark .divide-y > * + * {
+  border-color: #374151;
+}
+
+/* Hover states — only on elements that aren't already colored */
+.dark .hover\:bg-gray-50:hover  { background-color: #374151; }
+.dark .hover\:bg-gray-100:hover { background-color: #374151; }
+
+/* Shadows */
+.dark .shadow-sm  { box-shadow: 0 1px 3px 0 rgba(0,0,0,0.4); }
+.dark .shadow-xl  { box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); }
+
+/* ── Protect colored elements from being overridden ── */
+
+/* Brand/red buttons stay red */
+.dark .bg-brand-500,
+.dark .bg-brand-600,
+.dark .bg-brand-500:hover,
+.dark .bg-brand-600:hover {
+  background-color: #E8384F;
+  color: #ffffff;
+}
+
+/* Green badges/buttons stay green */
+.dark .bg-green-50  { background-color: #052e16; }
+.dark .bg-green-100 { background-color: #14532d; }
+.dark .text-green-700 { color: #86efac; }
+.dark .text-green-600 { color: #4ade80; }
+
+/* Yellow badges stay yellow */
+.dark .bg-yellow-50  { background-color: #422006; }
+.dark .text-yellow-700 { color: #fde047; }
+.dark .text-yellow-600 { color: #facc15; }
+
+/* Red badges stay red */
+.dark .bg-red-50  { background-color: #450a0a; }
+.dark .text-red-600 { color: #f87171; }
+.dark .text-red-700 { color: #fca5a5; }
+
+/* Blue badges */
+.dark .bg-blue-50  { background-color: #172554; }
+.dark .text-blue-700 { color: #93c5fd; }
+.dark .text-blue-600 { color: #60a5fa; }
+
+/* Orange badges */
+.dark .bg-orange-50  { background-color: #431407; }
+.dark .text-orange-700 { color: #fdba74; }
+.dark .text-orange-600 { color: #fb923c; }
+
+/* Purple badges */
+.dark .bg-purple-50  { background-color: #3b0764; }
+.dark .text-purple-700 { color: #d8b4fe; }
+
+/* Amber */
+.dark .bg-amber-50  { background-color: #451a03; }
+.dark .text-amber-600 { color: #fbbf24; }
+
+/* White text on colored backgrounds must stay white */
+.dark .bg-brand-500 .text-white,
+.dark .bg-green-500 .text-white,
+.dark .bg-red-500 .text-white,
+.dark button.bg-brand-500,
+.dark button.bg-brand-600 {
+  color: #ffffff;
+}
+
+/* Scrollbar */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;

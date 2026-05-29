@@ -9,8 +9,11 @@ export default function ManageMenuPage() {
   const [items, setItems] = useState([])
   const [categories, setCategories] = useState([])
   const [restaurantId, setRestaurantId] = useState(null)
-  const [showForm, setShowForm] = useState(false)
-  const [editing, setEditing] = useState(null)
+  const [showForm, setShowForm]       = useState(false)
+  const [editing, setEditing]         = useState(null)
+  const [showCatForm, setShowCatForm] = useState(false)
+  const [newCatName, setNewCatName]   = useState('')
+  const [savingCat, setSavingCat]     = useState(false)
 
   const { register, handleSubmit, reset } = useForm({
     defaultValues: {
@@ -63,6 +66,37 @@ export default function ManageMenuPage() {
     setShowForm(true)
   }
 
+  const handleAddCategory = async () => {
+    if (!newCatName.trim()) return
+    setSavingCat(true)
+    try {
+      const { data } = await api.post(`/restaurants/${restaurantId}/categories/`, {
+        name: newCatName.trim(),
+        order: categories.length + 1,
+      })
+      setCategories(prev => [...prev, data])
+      setNewCatName('')
+      setShowCatForm(false)
+      toast.success(`Category "${data.name}" added!`)
+    } catch (err) {
+      console.error(err)
+      toast.error(err.response?.data?.detail || 'Failed to add category.')
+    } finally {
+      setSavingCat(false)
+    }
+  }
+
+  const handleDeleteCategory = async (catId) => {
+    const cat = categories.find(c => c.id === catId)
+    if (!confirm(`Delete category "${cat?.name}"? Items in this category will become uncategorised.`)) return
+    try {
+      await api.delete(`/restaurants/categories/${catId}/`)
+      setCategories(prev => prev.filter(c => c.id !== catId))
+      toast.success('Category deleted.')
+    } catch (err) {
+      toast.error('Failed to delete category.')
+    }
+  }
   const openAdd = () => {
     setEditing(null)
     reset({
@@ -130,15 +164,70 @@ export default function ManageMenuPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       {/* Page header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-6 gap-3 flex-wrap">
         <h1 className="text-2xl font-bold text-gray-900">Menu Management</h1>
-        <button
-          onClick={openAdd}
-          className="flex items-center gap-2 bg-brand text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-brand-600 transition-colors"
-        >
-          <Plus className="w-4 h-4" /> Add Item
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setShowCatForm(v => !v)}
+            className="flex items-center gap-2 border border-gray-200 text-gray-600 px-4 py-2 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors"
+          >
+            <Plus className="w-4 h-4" /> Add Category
+          </button>
+          <button
+            onClick={openAdd}
+            className="flex items-center gap-2 bg-brand-500 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-brand-600 transition-colors"
+          >
+            <Plus className="w-4 h-4" /> Add Item
+          </button>
+        </div>
       </div>
+
+      {/* Category quick-add */}
+      {showCatForm && (
+        <div className="bg-white rounded-2xl border border-gray-100 p-4 mb-4 shadow-sm flex items-end gap-3">
+          <div className="flex-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">New category name</label>
+            <input
+              value={newCatName}
+              onChange={e => setNewCatName(e.target.value)}
+              placeholder="e.g. Starters, Main Course, Drinks..."
+              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/30 focus:border-brand-500"
+              onKeyDown={e => e.key === 'Enter' && handleAddCategory()}
+            />
+          </div>
+          <button
+            onClick={handleAddCategory}
+            disabled={savingCat || !newCatName.trim()}
+            className="px-5 py-2.5 bg-brand-500 text-white rounded-xl text-sm font-semibold hover:bg-brand-600 transition-colors disabled:opacity-50 shrink-0"
+          >
+            {savingCat ? 'Saving...' : 'Save'}
+          </button>
+          <button
+            onClick={() => { setShowCatForm(false); setNewCatName('') }}
+            className="p-2.5 border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
+          >
+            <X className="w-4 h-4 text-gray-400" />
+          </button>
+        </div>
+      )}
+
+      {/* Existing categories pills */}
+      {categories.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-5">
+          {categories.map(c => (
+            <span key={c.id} className="flex items-center gap-1.5 px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-medium">
+              {c.name}
+              <button
+                onClick={() => handleDeleteCategory(c.id)}
+                className="hover:text-red-500 transition-colors ml-0.5"
+                title="Delete category"
+              >
+                <X className="w-3 h-3" />
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
 
       {/* Add / Edit form */}
       {showForm && (
