@@ -271,6 +271,21 @@ Set environment variables in each platform's dashboard instead of using `.env` f
 
 ---
 
+## Sample images of the working site
+
+<img width="1890" height="892" alt="HomePage" src="https://github.com/user-attachments/assets/d74f1229-8758-4454-a357-f1a415a243b4" />
+<img width="1887" height="883" alt="Restaurant page" src="https://github.com/user-attachments/assets/4fa649e1-c53d-4e66-bbcc-ff768472cbb7" />
+<img width="1887" height="892" alt="Dark Mode" src="https://github.com/user-attachments/assets/438ab8c5-e2ec-46f1-80a2-2dca5974b518" />
+<img width="1883" height="881" alt="Restaurant menu" src="https://github.com/user-attachments/assets/b498b562-af4c-4840-a364-e04220fd5a29" />
+<img width="1914" height="891" alt="Cart with item" src="https://github.com/user-attachments/assets/e31bd600-7019-4a9c-ab97-c5a736ee7dec" />
+<img width="1885" height="883" alt="Checkout page" src="https://github.com/user-attachments/assets/34a39b68-6e07-4b78-a203-101845729cb1" />
+<img width="1887" height="879" alt="Order placed" src="https://github.com/user-attachments/assets/a31cbcdb-a153-4177-b09e-98479daad061" />
+<img width="1912" height="879" alt="Order page" src="https://github.com/user-attachments/assets/4b33154e-be32-4489-af50-a50464fda406" />
+<img width="1915" height="885" alt="Restaurant owner dashboard" src="https://github.com/user-attachments/assets/4433458c-fbed-45bb-9c14-f64d3ee6b858" />
+<img width="1889" height="793" alt="Admin Dashboard" src="https://github.com/user-attachments/assets/1c854222-76fa-4b2c-a39a-243199b2e234" />
+<img width="1882" height="813" alt="SignIn Page" src="https://github.com/user-attachments/assets/2646e0b8-880c-4464-a051-2083a8df6841" />
+<img width="1886" height="883" alt="New restaurant added by owner" src="https://github.com/user-attachments/assets/1b3b92ba-ffc2-4054-a819-86d4ec3df8fb" />
+
 ## 📝 License
 
 MIT License — feel free to use this project for learning and portfolio purposes.
