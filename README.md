@@ -280,6 +280,7 @@ Set environment variables in each platform's dashboard instead of using `.env` f
 <img width="1914" height="891" alt="Cart with item" src="https://github.com/user-attachments/assets/e31bd600-7019-4a9c-ab97-c5a736ee7dec" />
 <img width="1885" height="883" alt="Checkout page" src="https://github.com/user-attachments/assets/34a39b68-6e07-4b78-a203-101845729cb1" />
 <img width="1887" height="879" alt="Order placed" src="https://github.com/user-attachments/assets/a31cbcdb-a153-4177-b09e-98479daad061" />
+<img width="1884" height="885" alt="Payment gateway" src="https://github.com/user-attachments/assets/ab6fd23a-11f1-4375-af14-acbd11223f20" />
 <img width="1912" height="879" alt="Order page" src="https://github.com/user-attachments/assets/4b33154e-be32-4489-af50-a50464fda406" />
 <img width="1915" height="885" alt="Restaurant owner dashboard" src="https://github.com/user-attachments/assets/4433458c-fbed-45bb-9c14-f64d3ee6b858" />
 <img width="1889" height="793" alt="Admin Dashboard" src="https://github.com/user-attachments/assets/1c854222-76fa-4b2c-a39a-243199b2e234" />
