@@ -18,6 +18,10 @@ A fully featured food delivery web application inspired by Zomato/Swiggy, built 
 
 ---
 
+## Project Architecture
+
+<img width="2125" height="1625" alt="zomato_clone_architecture" src="https://github.com/user-attachments/assets/070cab9d-ffa4-4412-a640-2a8bdd023f77" />
+
 ## ✅ Features
 
 ### 👤 Authentication
