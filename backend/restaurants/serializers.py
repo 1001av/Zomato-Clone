@@ -9,9 +9,13 @@ def get_absolute_image_url(request, image_field):
     """Return full URL for an ImageField, or None if empty."""
     if not image_field:
         return None
+    url = str(image_field)
+    # If already a full URL (Cloudinary), return as is
+    if url.startswith('http://') or url.startswith('https://'):
+        return url
+    # Otherwise build absolute URL for local files
     if request is not None:
         return request.build_absolute_uri(image_field.url)
-    # Fallback (no request context) — prepend backend origin
     return f"http://localhost:8000{image_field.url}"
 
 
