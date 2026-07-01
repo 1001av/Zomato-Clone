@@ -31,8 +31,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_filters',
     'drf_spectacular',
-    # 'cloudinary',
-    # 'cloudinary_storage',
+    'cloudinary',
+    'cloudinary_storage',
     # Local apps
     'users',
     'restaurants',
@@ -202,3 +202,16 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'Full-featured food delivery platform API',
     'VERSION': '1.0.0',
 }
+
+# cloudinary used for image uploads in production, local media in development
+import cloudinary
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY':    os.getenv('CLOUDINARY_API_KEY'),
+    'API_SECRET': os.getenv('CLOUDINARY_API_SECRET'),
+}
+
+# Use Cloudinary in production, local media in development
+if os.environ.get('DATABASE_URL'):
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
