@@ -28,14 +28,6 @@ class MenuItemSerializer(serializers.ModelSerializer):
             'calories', 'category', 'category_name'
         ]
 
-    def to_representation(self, instance):
-        rep = super().to_representation(instance)
-        request = self.context.get('request')
-        if instance.image:
-            rep['image'] = get_absolute_image_url(request, instance.image)
-        return rep
-
-
 class RestaurantListSerializer(serializers.ModelSerializer):
     cuisines = CuisineSerializer(many=True, read_only=True)
     is_favourite = serializers.SerializerMethodField()
@@ -47,15 +39,6 @@ class RestaurantListSerializer(serializers.ModelSerializer):
             'avg_rating', 'total_reviews', 'delivery_time',
             'delivery_fee', 'min_order', 'is_open', 'is_favourite'
         ]
-
-    def to_representation(self, instance):
-        rep = super().to_representation(instance)
-        request = self.context.get('request')
-        if instance.logo:
-            rep['logo'] = get_absolute_image_url(request, instance.logo)
-        if instance.banner:
-            rep['banner'] = get_absolute_image_url(request, instance.banner)
-        return rep
 
     def get_is_favourite(self, obj):
         request = self.context.get('request')
@@ -74,15 +57,6 @@ class RestaurantDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Restaurant
         fields = '__all__'
-
-    def to_representation(self, instance):
-        rep = super().to_representation(instance)
-        request = self.context.get('request')
-        if instance.logo:
-            rep['logo'] = get_absolute_image_url(request, instance.logo)
-        if instance.banner:
-            rep['banner'] = get_absolute_image_url(request, instance.banner)
-        return rep
 
     def get_is_favourite(self, obj):
         request = self.context.get('request')
