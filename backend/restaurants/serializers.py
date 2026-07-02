@@ -5,31 +5,10 @@ from .models import Restaurant, Category, MenuItem, Cuisine, Favourite
 from users.serializers import UserDetailSerializer
 
 
-def get_absolute_image_url(request, image_field):
-    """Return full URL for an ImageField, or None if empty."""
-    if not image_field:
-        return None
-    url = str(image_field)
-    # If already a full URL (Cloudinary), return as is
-    if url.startswith('http://') or url.startswith('https://'):
-        return url
-    # Otherwise build absolute URL for local files
-    if request is not None:
-        return request.build_absolute_uri(image_field.url)
-    return f"http://localhost:8000{image_field.url}"
-
-
 class CuisineSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cuisine
         fields = ['id', 'name', 'image']
-
-    def to_representation(self, instance):
-        rep = super().to_representation(instance)
-        request = self.context.get('request')
-        if instance.image:
-            rep['image'] = get_absolute_image_url(request, instance.image)
-        return rep
 
 
 class CategorySerializer(serializers.ModelSerializer):
